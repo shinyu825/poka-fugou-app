@@ -1,45 +1,68 @@
-# Miscellaneous
-*.class
-*.log
-*.pyc
-*.swp
-.DS_Store
-.atom/
-.build/
-.buildlog/
-.history
-.svn/
-.swiftpm/
-migrate_working_dir/
+# Flutter/Dart 関連
+.dart_tool/
+.packages
+.pub-cache/
+.pub/
+build/
+flutter_*.png
+coverage/
 
-# IntelliJ related
+# IDE 関連
+.idea/
 *.iml
 *.ipr
 *.iws
-.idea/
+.vscode/
+*.swp
 
-# The .vscode folder contains launch configuration and tasks you configure in
-# VS Code which you may wish to be included in version control, so this line
-# is commented out by default.
-#.vscode/
+# バイナリ / 中間生成物
+*.lock
+*.log
+*.tmp
+*.DS_Store
 
-# Flutter/Dart/Pub related
-**/doc/api/
-**/ios/Flutter/.last_build_id
-.dart_tool/
-.flutter-plugins-dependencies
-.pub-cache/
-.pub/
-/build/
-/coverage/
+# Android 関連
+android/.gradle/
+android/captures/
+android/gradle-wrapper.jar
+android/local.properties
+android/app/*.keystore
+*.jks
 
-# Symbolication related
-app.*.symbols
+# iOS 関連
+ios/Flutter/Flutter.framework/
+ios/Flutter/Flutter.podspec
+ios/Flutter/Generated.xcconfig
+ios/Flutter/ephemeral/
+ios/.symlinks/
+ios/Pods/
+ios/Runner/GeneratedPluginRegistrant.*
+*.xcworkspace
+*.xcuserstate
+*.xcuserdatad
+*.moved-aside
+DerivedData/
 
-# Obfuscation related
-app.*.map.json
+# Xcode User data
+*.xcuserstate
+*.xccheckout
+*.xcodeproj/*
+!*.xcodeproj/project.pbxproj
+!*.xcodeproj/xcshareddata/
+!*.xcodeproj/project.xcworkspace/
 
-# Android Studio will place build artifacts here
-/android/app/debug
-/android/app/profile
-/android/app/release
+# macOS 関連
+**/.DS_Store
+
+# Windows 関連
+windows/flutter/ephemeral/
+
+# Linux 関連
+linux/flutter/ephemeral/
+
+# Web 関連
+web/.dart_tool/
+web/.pub/
+
+# その他
+*.bak
