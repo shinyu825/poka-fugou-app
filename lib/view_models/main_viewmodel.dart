@@ -38,6 +38,9 @@ class MainViewModel extends ChangeNotifier {
     isGoPokerScreen = false;
     isExchanged = false;
     isOpenHands.value = false;
+    resultStr = "";
+    myHandStr = "";
+    playerHandStr = "";
     final prefs = await SharedPreferences.getInstance();
     await prefs.clear();
     notifyListeners();
@@ -62,11 +65,11 @@ class MainViewModel extends ChangeNotifier {
 
   // 初回カードドロー
   Future<void> firstDrawCard(BuildContext context) async {
-    if (!context.mounted) return;
     final prefs = await SharedPreferences.getInstance();
     final deckId = prefs.getString("deckId");
     ApiConnection api = ApiConnection();
 
+    if (!context.mounted) return;
     final response = await api.startRequest(
       context,
       DrawDeckRequest(deckId: deckId ?? '', cardCount: 5),
@@ -74,6 +77,7 @@ class MainViewModel extends ChangeNotifier {
     if (response == null) return;
     if (myCardList.length != 5) {
       myCardList = response.cards;
+      if (!context.mounted) return;
       firstDrawCard(context);
     } else {
       cardList1 = response.cards;
@@ -84,11 +88,11 @@ class MainViewModel extends ChangeNotifier {
   // カード交換ドロー
   Future<void> drawMyCard(BuildContext context, int cardCount) async {
     if (cardCount != 0) {
-      if (!context.mounted) return;
       final prefs = await SharedPreferences.getInstance();
       final deckId = prefs.getString("deckId");
       ApiConnection api = ApiConnection();
 
+      if (!context.mounted) return;
       final response = await api.startRequest(
         context,
         DrawDeckRequest(deckId: deckId ?? '', cardCount: cardCount),
@@ -104,11 +108,11 @@ class MainViewModel extends ChangeNotifier {
   // カード交換ドロー
   Future<void> drawPlayer1Card(BuildContext context, int cardCount) async {
     if (cardCount != 0) {
-      if (!context.mounted) return;
       final prefs = await SharedPreferences.getInstance();
       final deckId = prefs.getString("deckId");
       ApiConnection api = ApiConnection();
 
+      if (!context.mounted) return;
       final response = await api.startRequest(
         context,
         DrawDeckRequest(deckId: deckId ?? '', cardCount: cardCount),
@@ -126,6 +130,7 @@ class MainViewModel extends ChangeNotifier {
     showProgressDialog(context);
     try {
       myCardList.removeWhere((card) => selectedMyCards.contains(card));
+      if (!context.mounted) return;
       await drawMyCard(context, selectedMyCards.length);
 
       // AIによる不要カード交換
@@ -134,13 +139,16 @@ class MainViewModel extends ChangeNotifier {
         selectedCards1.add(cardList1[index]);
       });
       cardList1.removeWhere((card) => selectedCards1.contains(card));
+      if (!context.mounted) return;
       await drawPlayer1Card(context, selectedCards1.length);
 
       notifyListeners();
     } catch (e) {
       debugPrint("ドローエラー" + e.toString());
     } finally {
-      dismissProgressDialog(context);
+      if (context.mounted) {
+        dismissProgressDialog(context);
+      }
       resultHands();
     }
   }

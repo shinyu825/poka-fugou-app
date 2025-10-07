@@ -9,7 +9,7 @@ import 'package:poka_fugou_app/views/view_container/dialog/error_dialog.dart';
 
 // カードドローリクエスト
 @JsonSerializable()
-class DrawDeckRequest extends RequestInterface {
+class DrawDeckRequest extends RequestInterface<DrawResponse> {
   final String deckId;
   final int cardCount;
   DrawDeckRequest({required this.deckId, required this.cardCount});
@@ -31,6 +31,6 @@ class DrawDeckRequest extends RequestInterface {
     Completer<DrawResponse?> completer,
   ) async {
     if (!context.mounted) return;
-    showErrorDialog(context, AppStrings.error, error.error);
+    await showErrorDialog(context, AppStrings.error, error.error);
   }
 }

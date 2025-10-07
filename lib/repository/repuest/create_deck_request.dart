@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:poka_fugou_app/constants/strings.dart';
@@ -10,7 +9,7 @@ import 'package:poka_fugou_app/views/view_container/dialog/error_dialog.dart';
 
 // 新規デッキ取得リクエスト
 @JsonSerializable()
-class CreateDeckRequest extends RequestInterface {
+class CreateDeckRequest extends RequestInterface<CreateDeckResponse> {
   final int deckCount;
   CreateDeckRequest({required this.deckCount});
 
@@ -32,6 +31,6 @@ class CreateDeckRequest extends RequestInterface {
     Completer<CreateDeckResponse?> completer,
   ) async {
     if (!context.mounted) return;
-    showErrorDialog(context, AppStrings.error, error.error);
+    await showErrorDialog(context, AppStrings.error, error.error);
   }
 }

@@ -2,8 +2,8 @@ import 'dart:async';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:poka_fugou_app/constants/strings.dart';
+import 'package:poka_fugou_app/models/api/response.dart';
 import 'package:poka_fugou_app/repository/request_interface.dart';
-import 'package:poka_fugou_app/views/view_container/dialog/error_dialog.dart';
 import 'package:poka_fugou_app/views/view_container/dialog/progress_dialog.dart';
 
 class ApiConnection {
@@ -54,18 +54,15 @@ class ApiConnection {
         } else {
           if (!context.mounted) return;
           debugPrint('失敗 ${request.segment}');
-          showErrorDialog(context, AppStrings.error, json["error"]);
-          // debugPrint('正誤: ${json["success"]}');
-          // debugPrint('メッセージ: ${json["error"]}');
-          // final error = ApiError(json["success"], json["error"]);
-          // await request.error(context, error, completer);
+          final error = ApiError(json["success"], json["error"]);
+          await request.error(context, error, completer);
           completer.complete(null);
         }
       } catch (e) {
         if (!context.mounted) return;
         debugPrint('例外 ${e.toString()}');
-        // final error = ApiError(false, e.toString());
-        // await request.error(context, error, completer);
+        final error = ApiError(false, e.toString());
+        await request.error(context, error, completer);
         completer.complete(null);
       } finally {
         if (isShowProgress) {
