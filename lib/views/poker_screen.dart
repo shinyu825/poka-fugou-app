@@ -86,26 +86,6 @@ class _PokerScreenState extends State<PokerScreen> {
                             cardList: mainViewModel.cardList1,
                             isMyhand: false,
                           ),
-                          // SizedBox(
-                          //   height: 100,
-                          //   child: Center(
-                          //     child: SingleChildScrollView(
-                          //       scrollDirection: Axis.horizontal,
-                          //       child: Row(
-                          //         mainAxisAlignment: MainAxisAlignment.center,
-                          //         children: List.generate(
-                          //           mainViewModel.cardList1.length,
-                          //           (index) {
-                          //             return Image.network(
-                          //               mainViewModel.cardList1[index].image,
-                          //               fit: BoxFit.cover,
-                          //             );
-                          //           },
-                          //         ),
-                          //       ),
-                          //     ),
-                          //   ),
-                          // ),
                         ],
                         const SizedBox(height: 20),
                         Column(
