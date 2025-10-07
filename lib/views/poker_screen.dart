@@ -134,7 +134,7 @@ class _PokerScreenState extends State<PokerScreen> {
                                   // 大富豪へ
                                   debugPrint('大富豪へ');
                                 },
-                                child: const Text(AppStrings.daihugo),
+                                child: const Text(AppStrings.daifugo),
                               ),
                             ],
                           ],
