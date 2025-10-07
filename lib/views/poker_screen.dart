@@ -86,26 +86,26 @@ class _PokerScreenState extends State<PokerScreen> {
                             cardList: mainViewModel.cardList1,
                             isMyhand: false,
                           ),
-                          SizedBox(
-                            height: 100,
-                            child: Center(
-                              child: SingleChildScrollView(
-                                scrollDirection: Axis.horizontal,
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: List.generate(
-                                    mainViewModel.cardList1.length,
-                                    (index) {
-                                      return Image.network(
-                                        mainViewModel.cardList1[index].image,
-                                        fit: BoxFit.cover,
-                                      );
-                                    },
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
+                          // SizedBox(
+                          //   height: 100,
+                          //   child: Center(
+                          //     child: SingleChildScrollView(
+                          //       scrollDirection: Axis.horizontal,
+                          //       child: Row(
+                          //         mainAxisAlignment: MainAxisAlignment.center,
+                          //         children: List.generate(
+                          //           mainViewModel.cardList1.length,
+                          //           (index) {
+                          //             return Image.network(
+                          //               mainViewModel.cardList1[index].image,
+                          //               fit: BoxFit.cover,
+                          //             );
+                          //           },
+                          //         ),
+                          //       ),
+                          //     ),
+                          //   ),
+                          // ),
                         ],
                         const SizedBox(height: 20),
                         Column(
@@ -132,6 +132,7 @@ class _PokerScreenState extends State<PokerScreen> {
                               ElevatedButton(
                                 onPressed: () {
                                   // 大富豪へ
+                                  mainViewModel.isOpenHands.value = false;
                                   debugPrint('大富豪へ');
                                 },
                                 child: const Text(AppStrings.daifugo),
@@ -166,7 +167,6 @@ class _PokerScreenState extends State<PokerScreen> {
                         opponentHand: mainViewModel.playerHandStr,
                       ),
                     ).then((_) {
-                      mainViewModel.isOpenHands.value = false;
                       mainViewModel.isExchanged = true;
                       mainViewModel.updateViewModel();
                     });
