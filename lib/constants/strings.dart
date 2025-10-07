@@ -20,7 +20,7 @@ class AppStrings {
   static const String nocard = 'カードがありません';
   static const String cardDraw = 'カードドロー';
   static const String exchange = 'カードを交換する';
-  static const String daihugo = '大富豪へ';
+  static const String daifugo = '大富豪へ';
   static const String myHand = 'あなたの役：';
   static const String player1Hand = '相手の役：';
   static const String youWin = 'You WIN.';
