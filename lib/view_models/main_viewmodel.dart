@@ -6,6 +6,7 @@ import 'package:poka_fugou_app/models/api/playing_card.dart';
 import 'package:poka_fugou_app/repository/api_connection.dart';
 import 'package:poka_fugou_app/repository/repuest/create_deck_request.dart';
 import 'package:poka_fugou_app/repository/repuest/draw_deck_request.dart';
+import 'package:poka_fugou_app/views/view_container/dialog/error_dialog.dart';
 import 'package:poka_fugou_app/views/view_container/dialog/progress_dialog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -144,7 +145,8 @@ class MainViewModel extends ChangeNotifier {
 
       notifyListeners();
     } catch (e) {
-      debugPrint("ドローエラー" + e.toString());
+      if (!context.mounted) return;
+      showErrorDialog(context, AppStrings.drawError, e.toString());
     } finally {
       if (context.mounted) {
         dismissProgressDialog(context);

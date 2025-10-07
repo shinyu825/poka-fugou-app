@@ -13,6 +13,7 @@ class AppStrings {
   static const String exit = '終了';
   static const String ok = 'OK';
   static const String error = '通信エラー';
+  static const String drawError = 'ドローエラー';
   static const String back = "閉じる";
 
   // ゲーム関連
