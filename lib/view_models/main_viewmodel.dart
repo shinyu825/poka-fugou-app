@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:poka_fugou_app/constants/strings.dart';
 import 'package:poka_fugou_app/models/ai/simple_ai.dart';
-import 'package:poka_fugou_app/models/api/card_images.dart';
 import 'package:poka_fugou_app/models/hand_evaluator.dart';
 import 'package:poka_fugou_app/models/api/playing_card.dart';
 import 'package:poka_fugou_app/repository/api_connection.dart';
