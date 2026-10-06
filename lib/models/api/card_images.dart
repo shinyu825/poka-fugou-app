@@ -1,3 +1,4 @@
+/// カード画像
 class CardImages {
   final String svg;
   final String png;

@@ -1,5 +1,6 @@
 import 'package:poka_fugou_app/constants/hand_rank.dart';
 
+/// ポーカー役表示
 class HandScore implements Comparable<HandScore> {
   final HandRank rank;
   final List<int> tiebreakers;

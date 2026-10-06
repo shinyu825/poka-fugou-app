@@ -7,7 +7,7 @@ import 'package:poka_fugou_app/repository/request_interface.dart';
 import 'package:poka_fugou_app/models/api/response.dart';
 import 'package:poka_fugou_app/views/view_container/dialog/error_dialog.dart';
 
-// 新規デッキ取得リクエスト
+/// 新規デッキ取得リクエスト
 @JsonSerializable()
 class CreateDeckRequest extends RequestInterface<CreateDeckResponse> {
   final int deckCount;

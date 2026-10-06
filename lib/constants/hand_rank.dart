@@ -1,5 +1,6 @@
 import 'package:poka_fugou_app/models/api/playing_card.dart';
 
+/// ポーカー役
 enum HandRank {
   highCard,
   onePair,

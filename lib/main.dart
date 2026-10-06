@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:poka_fugou_app/constants/strings.dart';
 import 'package:poka_fugou_app/view_models/main_viewmodel.dart';
+import 'package:poka_fugou_app/view_models/poker_viewmodel.dart';
 import 'package:poka_fugou_app/views/poker_screen.dart';
 import 'package:provider/provider.dart';
 
@@ -28,6 +29,7 @@ class MyApp extends StatelessWidget {
   }
 }
 
+/// メイン画面（最初の画面）
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
   final String title;
@@ -46,11 +48,6 @@ class _MyHomePageState extends State<MyHomePage> with RouteAware {
   }
 
   @override
-  void didPopNext() {
-    mainViewModel = Provider.of<MainViewModel>(context, listen: false);
-  }
-
-  @override
   Widget build(BuildContext context) {
     // 画面遷移処理
     if (mainViewModel.isGoPokerScreen) {
@@ -59,7 +56,11 @@ class _MyHomePageState extends State<MyHomePage> with RouteAware {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (_) => PokerScreen(mainViewModel: mainViewModel),
+            // builder: (_) => PokerScreen(mainViewModel: mainViewModel),
+            builder: (_) => ChangeNotifierProvider(
+              create: (_) => PokerViewModel(mainViewModel),
+              child: PokerScreen(mainViewModel: mainViewModel),
+            ),
           ),
         );
         mainViewModel.isGoPokerScreen = false;
@@ -72,6 +73,7 @@ class _MyHomePageState extends State<MyHomePage> with RouteAware {
         title: Text(widget.title),
       ),
       body: Center(
+        // 開始ボタン
         child: ElevatedButton(
           onPressed: () async {
             // デッキ生成

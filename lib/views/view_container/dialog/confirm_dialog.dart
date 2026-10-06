@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:poka_fugou_app/constants/strings.dart';
 
-/// エラーダイアログ
-Future<void> showErrorDialog(
+/// 確認ダイアログ（OKでtrue、キャンセルでfalse）
+Future<bool> showConfirmDialog(
   BuildContext context,
   String title,
   String message,
-) {
-  return showDialog(
+) async {
+  final result = await showDialog<bool>(
     context: context,
     barrierDismissible: false,
     builder: (BuildContext context) {
@@ -16,13 +16,20 @@ Future<void> showErrorDialog(
         content: Text(message),
         actions: <Widget>[
           TextButton(
+            child: const Text(AppStrings.cancel),
+            onPressed: () {
+              Navigator.of(context).pop(false);
+            },
+          ),
+          TextButton(
             child: const Text(AppStrings.ok),
             onPressed: () {
-              Navigator.of(context).pop();
+              Navigator.of(context).pop(true);
             },
           ),
         ],
       );
     },
   );
+  return result ?? false;
 }

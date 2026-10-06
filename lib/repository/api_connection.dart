@@ -6,6 +6,7 @@ import 'package:poka_fugou_app/models/api/response.dart';
 import 'package:poka_fugou_app/repository/request_interface.dart';
 import 'package:poka_fugou_app/views/view_container/dialog/progress_dialog.dart';
 
+/// API通信
 class ApiConnection {
   static final Dio _dio = Dio(
     BaseOptions(
@@ -16,6 +17,10 @@ class ApiConnection {
     ),
   );
 
+  /// API開始
+  ///
+  /// [request] リクエストデータ
+  /// [isShowProgress] 通信中ダイアログを表示させるかどうか
   Future<T?> startRequest<T>(
     BuildContext context,
     RequestInterface<T> request, {

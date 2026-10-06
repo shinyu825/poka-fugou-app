@@ -1,3 +1,4 @@
+/// デッキ生成レスポンス
 class CreateDeckResponse {
   final bool success;
   final String deckId;

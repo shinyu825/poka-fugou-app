@@ -5,7 +5,7 @@ import 'package:poka_fugou_app/models/api/playing_card.dart';
 import 'package:poka_fugou_app/models/hand_evaluator.dart';
 import 'package:poka_fugou_app/models/hand_score.dart';
 
-// 強化版AI
+/// 強化版AI
 class MonteCarloAI {
   final int simulations;
   final Random rng;

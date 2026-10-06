@@ -2,12 +2,16 @@ import 'package:poka_fugou_app/constants/hand_rank.dart';
 import 'package:poka_fugou_app/models/api/playing_card.dart';
 import 'package:poka_fugou_app/models/hand_score.dart';
 
+/// 役判定
 class HandEvaluator {
-  // 役判定（AはストレートでA,2,3,4,5も許容）
+  /// 役判定（AはストレートでA,2,3,4,5も許容）
   static evaluate5(List<PlayingCard> hand) {
-    hand.sort((a, b) => b.value.compareTo(a.value));
-    final ranks = hand.map((c) => c.value).toList();
-    final suits = hand.map((c) => c.suit).toList();
+    final sorted = [...hand]
+      ..sort(
+        (a, b) => parsePorkerRank(b.value).compareTo(parsePorkerRank(a.value)),
+      );
+    final ranks = sorted.map((c) => parsePorkerRank(c.value)).toList();
+    final suits = sorted.map((c) => c.suit).toList();
 
     bool isFlush = suits.toSet().length == 1;
 

@@ -1,10 +1,11 @@
 import 'package:poka_fugou_app/models/api/card_images.dart';
 
+/// カードレスポンス
 class PlayingCard {
   final String code;
   final String image;
   final CardImages images;
-  final int value;
+  final String value;
   final String suit;
 
   PlayingCard({
@@ -21,37 +22,61 @@ class PlayingCard {
     images: CardImages.fromJson(
       Map<String, dynamic>.from(json['images'] as Map),
     ),
-    value: parseRank(json['value'] as String),
+    value: json['value'] as String,
     suit: json['suit'] as String,
   );
 
-  // Stringのvalueをintに変更
-  static List<int> toRankList(List<String> values) {
-    return values.map((value) => parseRank(value)).toList();
-  }
-
-  // ランク順にソートし、ペアやスリーカードなどの重複するランクのカードを先頭に持ってくる
-  static List<PlayingCard> toParseRank(List<PlayingCard> pcList) {
+  /// ランク順にソートし、ペアやスリーカードなどの重複するランクのカードを先頭に持ってくる
+  static List<PlayingCard> toParsePorkerRank(List<PlayingCard> pcList) {
     // ランクごとの出現回数を数える
     final countMap = <int, int>{};
     for (var c in pcList) {
-      countMap[c.value] = (countMap[c.value] ?? 0) + 1;
+      countMap[parsePorkerRank(c.value)] =
+          (countMap[parsePorkerRank(c.value)] ?? 0) + 1;
     }
 
     // 新しいリストにコピーしてソート
     final sorted = [...pcList];
     sorted.sort((a, b) {
-      final countA = countMap[a.value]!;
-      final countB = countMap[b.value]!;
+      final countA = countMap[parsePorkerRank(a.value)]!;
+      final countB = countMap[parsePorkerRank(b.value)]!;
       if (countA != countB) return countB.compareTo(countA);
-      return b.value.compareTo(a.value);
+      return parsePorkerRank(b.value).compareTo(parsePorkerRank(a.value));
     });
+    return sorted;
+  }
+
+  /// 大富豪ランク順にソート
+  static List<PlayingCard> toParseDaifugoRank(List<PlayingCard> pcList) {
+    // 新しいリストにコピーしてソート
+    final sorted = [...pcList]
+      ..sort(
+        (a, b) =>
+            parseDaifugoRank(b.value).compareTo(parseDaifugoRank(a.value)),
+      );
     return sorted;
   }
 }
 
-int parseRank(String value) {
+int parsePorkerRank(String value) {
   switch (value) {
+    case "ACE":
+      return 14;
+    case "KING":
+      return 13;
+    case "QUEEN":
+      return 12;
+    case "JACK":
+      return 11;
+    default:
+      return int.tryParse(value) ?? 0;
+  }
+}
+
+int parseDaifugoRank(String value) {
+  switch (value) {
+    case "2":
+      return 15;
     case "ACE":
       return 14;
     case "KING":

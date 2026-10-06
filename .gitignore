@@ -66,3 +66,7 @@ web/.pub/
 
 # その他
 *.bak
+
+# Flutter 自動生成ファイル
+.flutter-plugins
+.flutter-plugins-dependencies

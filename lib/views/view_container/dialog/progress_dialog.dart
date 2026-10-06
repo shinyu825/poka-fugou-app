@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+/// 通信中のぐるぐる表示
 void showProgressDialog(BuildContext context) {
   showDialog(
     context: context,
@@ -10,6 +11,7 @@ void showProgressDialog(BuildContext context) {
   );
 }
 
+/// 通信中のぐるぐる非表示
 void dismissProgressDialog(BuildContext context) {
   if (Navigator.canPop(context)) {
     Navigator.of(context, rootNavigator: true).pop();

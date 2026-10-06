@@ -2,7 +2,7 @@ import 'package:poka_fugou_app/constants/hand_rank.dart';
 import 'package:poka_fugou_app/models/api/playing_card.dart';
 import 'package:poka_fugou_app/models/hand_evaluator.dart';
 
-// シンプルAIの意思決定（交換方針）
+/// シンプルAIの意思決定（交換方針）
 class SimpleAI {
   /// 返り値は捨てるカードのインデックス集合
   Set<int> decideDiscards(List<PlayingCard> hand) {
@@ -18,32 +18,33 @@ class SimpleAI {
         return {}; // キープ
       case HandRank.threeKind:
         // スリーカード以外の2枚を捨てる
-        final ranks = hand.map((c) => c.value).toList();
+        final ranks = hand.map((c) => parsePorkerRank(c.value)).toList();
         final tripleRank = _threeKindRank(ranks); // スリーカードのランクを取得
         return {
           for (int i = 0; i < hand.length; i++)
-            if (hand[i].value != tripleRank) i,
+            if (ranks[i] != tripleRank) i,
         };
       case HandRank.twoPair:
         // ツーペア以外の1枚を捨てる
-        final ranks = hand.map((c) => c.value).toList();
+        final ranks = hand.map((c) => parsePorkerRank(c.value)).toList();
         final pairRanks = _twoPairRanks(ranks); // 2つのペアの値を取得
         return {
           for (int i = 0; i < hand.length; i++)
-            if (!pairRanks.contains(hand[i].value)) i,
+            if (!pairRanks.contains(ranks[i])) i,
         };
       case HandRank.onePair:
         // ペア以外の3枚を捨てる
-        final ranks = hand.map((c) => c.value).toList();
+        final ranks = hand.map((c) => parsePorkerRank(c.value)).toList();
         final pairRank = _pairRank(ranks);
         return {
           for (int i = 0; i < hand.length; i++)
-            if (hand[i].value != pairRank) i,
+            if (ranks[i] != pairRank) i,
         };
       case HandRank.highCard:
         // A or K があれば1枚残し、他は捨てる
-        int keepIdx = hand.indexWhere((c) => c.value == 14);
-        if (keepIdx == -1) keepIdx = hand.indexWhere((c) => c.value == 13);
+        final ranks = hand.map((c) => parsePorkerRank(c.value)).toList();
+        int keepIdx = ranks.indexOf(14);
+        if (keepIdx == -1) keepIdx = ranks.indexOf(13);
         return {
           for (int i = 0; i < hand.length; i++)
             if (i != keepIdx) i,

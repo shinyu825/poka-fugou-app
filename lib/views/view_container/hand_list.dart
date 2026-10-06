@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:poka_fugou_app/constants/strings.dart';
 import 'package:poka_fugou_app/models/api/playing_card.dart';
-import 'package:poka_fugou_app/view_models/main_viewmodel.dart';
+import 'package:poka_fugou_app/view_models/poker_viewmodel.dart';
 
+/// ポーカーのハンド表示
 class HandList extends StatefulWidget {
-  final MainViewModel mainViewModel;
+  final PokerViewModel pokerViewModel;
   final List<PlayingCard> cardList;
   final bool isMyhand;
 
   const HandList({
     super.key,
-    required this.mainViewModel,
+    required this.pokerViewModel,
     required this.cardList,
     this.isMyhand = false,
   });
@@ -20,14 +21,14 @@ class HandList extends StatefulWidget {
 }
 
 class _HandListState extends State<HandList> {
-  MainViewModel get mainViewModel => widget.mainViewModel;
+  PokerViewModel get pokerViewModel => widget.pokerViewModel;
 
   void _toggleCard(PlayingCard card) {
     setState(() {
-      if (mainViewModel.selectedMyCards.contains(card)) {
-        mainViewModel.selectedMyCards.remove(card);
+      if (pokerViewModel.selectedMyCards.contains(card)) {
+        pokerViewModel.selectedMyCards.remove(card);
       } else {
-        mainViewModel.selectedMyCards.add(card);
+        pokerViewModel.selectedMyCards.add(card);
       }
     });
   }
@@ -42,18 +43,14 @@ class _HandListState extends State<HandList> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: List.generate(widget.cardList.length, (index) {
-              final isSelected = mainViewModel.selectedMyCards.contains(
-                widget.cardList[index],
-              );
+              final card = widget.cardList[index];
+              final isSelected = pokerViewModel.selectedMyCards.contains(card);
               return widget.isMyhand
                   ? Transform.translate(
                       offset: Offset(0, isSelected ? -10 : 0),
                       child: GestureDetector(
-                        onTap: () => _toggleCard(widget.cardList[index]),
-                        child: Image.network(
-                          widget.cardList[index].image,
-                          fit: BoxFit.cover,
-                        ),
+                        onTap: () => _toggleCard(card),
+                        child: Image.network(card.image, fit: BoxFit.cover),
                       ),
                     )
                   : Image.network(AppStrings.cardBackUrl, fit: BoxFit.cover);

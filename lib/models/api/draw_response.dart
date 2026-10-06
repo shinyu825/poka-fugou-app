@@ -1,5 +1,6 @@
 import 'package:poka_fugou_app/models/api/playing_card.dart';
 
+/// カードドローレスポンス
 class DrawResponse {
   final bool success;
   final String deckId;

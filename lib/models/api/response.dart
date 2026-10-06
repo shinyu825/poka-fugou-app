@@ -1,3 +1,4 @@
+/// エラーレスポンス
 class ApiError {
   final bool success;
   final String error;

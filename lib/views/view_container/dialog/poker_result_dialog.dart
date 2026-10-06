@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:poka_fugou_app/constants/strings.dart';
 
+/// ポーカー結果表示ダイアログ
 class PokerResultDialog extends StatelessWidget {
   final String result;
   final String playerHand;
   final String opponentHand;
 
   const PokerResultDialog({
-    Key? key,
+    super.key,
     required this.result,
     required this.playerHand,
     required this.opponentHand,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

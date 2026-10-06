@@ -1,54 +1,41 @@
 import 'package:flutter/material.dart';
-import 'package:poka_fugou_app/constants/strings.dart';
-import 'package:poka_fugou_app/models/ai/simple_ai.dart';
-import 'package:poka_fugou_app/models/hand_evaluator.dart';
 import 'package:poka_fugou_app/models/api/playing_card.dart';
 import 'package:poka_fugou_app/repository/api_connection.dart';
 import 'package:poka_fugou_app/repository/repuest/create_deck_request.dart';
-import 'package:poka_fugou_app/repository/repuest/draw_deck_request.dart';
-import 'package:poka_fugou_app/views/view_container/dialog/error_dialog.dart';
-import 'package:poka_fugou_app/views/view_container/dialog/progress_dialog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+/// メインViewModel
 class MainViewModel extends ChangeNotifier {
-  // 自分のカードリスト
+  /// 自分のカードリスト
   List<PlayingCard> myCardList = [];
-  // 相手1のカードリスト
+
+  /// 相手1のカードリスト
   List<PlayingCard> cardList1 = [];
-  // 選択された(交換する)カードリスト
-  List<PlayingCard> selectedMyCards = [];
-  // 相手1の交換カードリスト
-  List<PlayingCard> selectedCards1 = [];
 
-  // ポーカー画面に遷移するかどうか
+  /// ポーカー画面に遷移するかどうか
   bool isGoPokerScreen = false;
-  // 交換したかどうか
-  bool isExchanged = false;
-  // 相手のハンドを見せるかどうか,勝敗結果ダイアログを表示させるかどうか
-  ValueNotifier<bool> isOpenHands = ValueNotifier(false);
 
-  String resultStr = "";
-  String myHandStr = "";
-  String playerHandStr = "";
+  /// 山札の残り枚数
+  int remaining = 0;
 
-  Future<void> clearAll() async {
-    myCardList.clear();
-    cardList1.clear();
-    selectedMyCards.clear();
-    selectedCards1.clear();
+  // Future<void> clearAll() async {
+  //   isGoPokerScreen = false;
+  //   final prefs = await SharedPreferences.getInstance();
+  //   await prefs.clear();
+  //   notifyListeners();
+  //   return Future.value();
+  // }
+
+  /// ゲームをリセット
+  void resetGame() {
+    myCardList = [];
+    cardList1 = [];
     isGoPokerScreen = false;
-    isExchanged = false;
-    isOpenHands.value = false;
-    resultStr = "";
-    myHandStr = "";
-    playerHandStr = "";
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.clear();
+    remaining = 0;
     notifyListeners();
-    return Future.value();
   }
 
-  // 新規デッキ作成
+  /// 新規デッキ作成
   Future<void> createDeck(BuildContext context) async {
     if (!context.mounted) return;
     ApiConnection api = ApiConnection();
@@ -60,129 +47,38 @@ class MainViewModel extends ChangeNotifier {
     if (response == null) return;
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString("deckId", response.deckId);
+    remaining = response.remaining;
 
     isGoPokerScreen = true;
   }
 
-  // 初回カードドロー
-  Future<void> firstDrawCard(BuildContext context) async {
-    final prefs = await SharedPreferences.getInstance();
-    final deckId = prefs.getString("deckId");
-    ApiConnection api = ApiConnection();
-
-    if (!context.mounted) return;
-    final response = await api.startRequest(
-      context,
-      DrawDeckRequest(deckId: deckId ?? '', cardCount: 5),
-    );
-    if (response == null) return;
-    if (myCardList.length != 5) {
-      myCardList = response.cards;
-      if (!context.mounted) return;
-      firstDrawCard(context);
-    } else {
-      cardList1 = response.cards;
-    }
+  /// 山札の残り枚数を更新
+  void updateRemaining(int count) {
+    remaining = count;
     notifyListeners();
   }
 
-  // カード交換ドロー
-  Future<void> drawMyCard(BuildContext context, int cardCount) async {
-    if (cardCount != 0) {
-      final prefs = await SharedPreferences.getInstance();
-      final deckId = prefs.getString("deckId");
-      ApiConnection api = ApiConnection();
-
-      if (!context.mounted) return;
-      final response = await api.startRequest(
-        context,
-        DrawDeckRequest(deckId: deckId ?? '', cardCount: cardCount),
-        isShowProgress: false,
-      );
-      if (response == null) return;
-      myCardList.addAll(response.cards);
-      selectedMyCards.clear();
-      notifyListeners();
-    }
+  /// 自分のカードリストに新規追加
+  void addMyCardList(List<PlayingCard> list) {
+    myCardList.addAll(list);
+    notifyListeners();
   }
 
-  // カード交換ドロー
-  Future<void> drawPlayer1Card(BuildContext context, int cardCount) async {
-    if (cardCount != 0) {
-      final prefs = await SharedPreferences.getInstance();
-      final deckId = prefs.getString("deckId");
-      ApiConnection api = ApiConnection();
-
-      if (!context.mounted) return;
-      final response = await api.startRequest(
-        context,
-        DrawDeckRequest(deckId: deckId ?? '', cardCount: cardCount),
-        isShowProgress: false,
-      );
-      if (response == null) return;
-      cardList1.addAll(response.cards);
-      selectedCards1.clear();
-      notifyListeners();
-    }
+  /// 自分のカードリストを並び替え
+  void sortedMyCardList(List<PlayingCard> list) {
+    myCardList = list;
+    notifyListeners();
   }
 
-  // カード交換
-  void exchangeCard(BuildContext context) async {
-    showProgressDialog(context);
-    try {
-      myCardList.removeWhere((card) => selectedMyCards.contains(card));
-      if (!context.mounted) return;
-      await drawMyCard(context, selectedMyCards.length);
-
-      // AIによる不要カード交換
-      SimpleAI ai = SimpleAI();
-      ai.decideDiscards(cardList1).forEach((index) {
-        selectedCards1.add(cardList1[index]);
-      });
-      cardList1.removeWhere((card) => selectedCards1.contains(card));
-      if (!context.mounted) return;
-      await drawPlayer1Card(context, selectedCards1.length);
-
-      notifyListeners();
-    } catch (e) {
-      if (!context.mounted) return;
-      showErrorDialog(context, AppStrings.drawError, e.toString());
-    } finally {
-      if (context.mounted) {
-        dismissProgressDialog(context);
-      }
-      resultHands();
-    }
+  /// 相手のカードリストに新規追加
+  void addCardList1(List<PlayingCard> list) {
+    cardList1.addAll(list);
+    notifyListeners();
   }
 
-  // 役判定
-  void resultHands() {
-    final myHandRank = HandEvaluator.evaluate5(myCardList);
-    final handRank1 = HandEvaluator.evaluate5(cardList1);
-
-    final result = myHandRank.compareTo(handRank1);
-    if (result > 0) {
-      resultStr = AppStrings.youWin;
-    } else if (result < 0) {
-      resultStr = AppStrings.youLose;
-    } else {
-      resultStr = AppStrings.draw;
-    }
-    myHandStr = '${myHandRank.rank.jpName}';
-    playerHandStr = "${handRank1.rank.jpName}";
-
-    Future.delayed(Duration(seconds: 2), () {
-      // 役判定のためにランク順にソート
-      final sortedMyCards = PlayingCard.toParseRank(myCardList);
-      myCardList = sortedMyCards;
-      final sortedCards1 = PlayingCard.toParseRank(cardList1);
-      cardList1 = sortedCards1;
-      notifyListeners();
-      isOpenHands.value = true;
-    });
-  }
-
-  void updateViewModel() {
+  /// 相手のカードリストを並び替え
+  void sortedCardList1(List<PlayingCard> list) {
+    cardList1 = list;
     notifyListeners();
   }
 }
