@@ -5,7 +5,15 @@ import 'package:poka_fugou_app/models/hand_evaluator.dart';
 /// シンプルAIの意思決定（交換方針）
 class SimpleAI {
   /// 返り値は捨てるカードのインデックス集合
-  Set<int> decideDiscards(List<PlayingCard> hand) {
+  Set<int> decideDiscards(List<PlayingCard> originalHand) {
+    // ジョーカーは一番強くなるカードに置き換えて判断し、絶対に捨てない
+    final hand = HandEvaluator.resolveJokers(originalHand);
+    final discards = _decideDiscards(hand);
+    discards.removeWhere((i) => originalHand[i].isJoker);
+    return discards;
+  }
+
+  Set<int> _decideDiscards(List<PlayingCard> hand) {
     final score = HandEvaluator.evaluate5(hand);
     // 役に応じて方針
     switch (score.rank) {
@@ -15,6 +23,7 @@ class SimpleAI {
       case HandRank.fourKind:
       case HandRank.straightFlush:
       case HandRank.royalFlush:
+      case HandRank.fiveKind:
         return {}; // キープ
       case HandRank.threeKind:
         // スリーカード以外の2枚を捨てる
@@ -49,14 +58,12 @@ class SimpleAI {
           for (int i = 0; i < hand.length; i++)
             if (i != keepIdx) i,
         };
-      default:
-        return {};
     }
   }
 
   int _pairRank(List<int> ranks) {
     final count = <int, int>{};
-    for (var r in ranks) {
+    for (final r in ranks) {
       count[r] = (count[r] ?? 0) + 1;
     }
     return count.entries.firstWhere((e) => e.value == 2).key;
@@ -64,7 +71,7 @@ class SimpleAI {
 
   List<int> _twoPairRanks(List<int> ranks) {
     final count = <int, int>{};
-    for (var r in ranks) {
+    for (final r in ranks) {
       count[r] = (count[r] ?? 0) + 1;
     }
 
@@ -79,7 +86,7 @@ class SimpleAI {
 
   int _threeKindRank(List<int> ranks) {
     final count = <int, int>{};
-    for (var r in ranks) {
+    for (final r in ranks) {
       count[r] = (count[r] ?? 0) + 1;
     }
     // 3枚そろっているランクを探す

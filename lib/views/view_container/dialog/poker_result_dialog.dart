@@ -6,12 +6,14 @@ class PokerResultDialog extends StatelessWidget {
   final String result;
   final String playerHand;
   final String opponentHand;
+  final String point;
 
   const PokerResultDialog({
     super.key,
     required this.result,
     required this.playerHand,
     required this.opponentHand,
+    required this.point,
   });
 
   @override
@@ -33,6 +35,11 @@ class PokerResultDialog extends StatelessWidget {
           Text(
             '${AppStrings.player1Hand}$opponentHand',
             style: const TextStyle(fontSize: 18),
+          ),
+          const SizedBox(height: 20),
+          Text(
+            point,
+            style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 20),
           ElevatedButton(

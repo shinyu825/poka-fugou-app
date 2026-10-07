@@ -1,13 +1,27 @@
-import 'dart:async';
 import 'package:dio/dio.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:poka_fugou_app/constants/strings.dart';
 import 'package:poka_fugou_app/models/api/response.dart';
 import 'package:poka_fugou_app/repository/request_interface.dart';
-import 'package:poka_fugou_app/views/view_container/dialog/progress_dialog.dart';
+
+/// API通信の結果（成功ならdata、失敗ならerror）
+class ApiResult<T> {
+  final T? data;
+  final String? error;
+
+  const ApiResult.success(this.data) : error = null;
+  const ApiResult.failure(this.error) : data = null;
+
+  bool get isSuccess => error == null;
+}
+
+/// API通信のインターフェース（テストでは差し替える）
+abstract class ApiClient {
+  Future<ApiResult<T>> request<T>(RequestInterface<T> request);
+}
 
 /// API通信
-class ApiConnection {
+class ApiConnection implements ApiClient {
   static final Dio _dio = Dio(
     BaseOptions(
       baseUrl: AppStrings.baseUrl,
@@ -17,66 +31,42 @@ class ApiConnection {
     ),
   );
 
-  /// API開始
-  ///
-  /// [request] リクエストデータ
-  /// [isShowProgress] 通信中ダイアログを表示させるかどうか
-  Future<T?> startRequest<T>(
-    BuildContext context,
-    RequestInterface<T> request, {
-    bool isShowProgress = true,
-  }) async {
-    if (isShowProgress) {
-      showProgressDialog(context);
-    }
-    final completer = Completer<T?>();
-    () async {
-      try {
-        Response response;
-
-        switch (request.method) {
-          case 'GET':
-            response = await _dio.get(
-              request.segment,
-              queryParameters: request.data,
-            );
-            break;
-          case 'POST':
-            response = await _dio.post(request.segment, data: request.data);
-            break;
-          case 'PUT':
-            response = await _dio.put(request.segment, data: request.data);
-            break;
-          default:
-            response = await _dio.delete(request.segment, data: request.data);
-            break;
-        }
-
-        final json = response.data as Map<String, dynamic>;
-        if (json["success"]) {
-          debugPrint('成功 ${request.segment}');
-          completer.complete(request.parse(json));
-        } else {
-          if (!context.mounted) return;
-          debugPrint('失敗 ${request.segment}');
-          final error = ApiError(json["success"], json["error"]);
-          await request.error(context, error, completer);
-          completer.complete(null);
-        }
-      } catch (e) {
-        if (!context.mounted) return;
-        debugPrint('例外 ${e.toString()}');
-        final error = ApiError(false, e.toString());
-        await request.error(context, error, completer);
-        completer.complete(null);
-      } finally {
-        if (isShowProgress) {
-          if (context.mounted) {
-            dismissProgressDialog(context);
-          }
-        }
+  /// API実行（画面には触らず、結果だけを返す。エラーは利用者向けの文言に変換する）
+  @override
+  Future<ApiResult<T>> request<T>(RequestInterface<T> request) async {
+    try {
+      Response response;
+      switch (request.method) {
+        case 'GET':
+          response = await _dio.get(
+            request.segment,
+            queryParameters: request.data,
+          );
+          break;
+        case 'POST':
+          response = await _dio.post(request.segment, data: request.data);
+          break;
+        case 'PUT':
+          response = await _dio.put(request.segment, data: request.data);
+          break;
+        default:
+          response = await _dio.delete(request.segment, data: request.data);
+          break;
       }
-    }();
-    return completer.future;
+
+      final json = response.data as Map<String, dynamic>;
+      if (json['success'] == true) {
+        debugPrint('成功 ${request.segment}');
+        return ApiResult.success(request.parse(json));
+      }
+      debugPrint('失敗 ${request.segment}: ${ApiError.fromJson(json).error}');
+      return const ApiResult.failure(AppStrings.serverError);
+    } on DioException catch (e) {
+      debugPrint('通信エラー ${request.segment}: ${e.message}');
+      return const ApiResult.failure(AppStrings.networkError);
+    } catch (e) {
+      debugPrint('例外 ${request.segment}: $e');
+      return const ApiResult.failure(AppStrings.unexpectedError);
+    }
   }
 }

@@ -1,86 +1,71 @@
 import 'package:flutter/material.dart';
 import 'package:poka_fugou_app/constants/strings.dart';
 import 'package:poka_fugou_app/models/api/playing_card.dart';
-import 'package:poka_fugou_app/view_models/daifugo_viewmodel.dart';
+import 'package:poka_fugou_app/views/view_container/card_image.dart';
 
-/// 大富豪のハンド
-class DaifugoHandList extends StatefulWidget {
-  final DaifugoViewModel daifugoViewModel;
+/// 大富豪のハンド（重ねて表示。自分の手札はタップで選択でき、選択中は少し浮く）
+class DaifugoHandList extends StatelessWidget {
   final List<PlayingCard> cardList;
   final bool isMyhand;
 
+  /// 選択中のカード（自分の手札のみ）
+  final List<PlayingCard> selectedCards;
+
+  /// カードをタップしたとき（自分の手札のみ）
+  final void Function(PlayingCard card)? onTapCard;
+
   const DaifugoHandList({
     super.key,
-    required this.daifugoViewModel,
     required this.cardList,
     this.isMyhand = false,
+    this.selectedCards = const [],
+    this.onTapCard,
   });
 
-  @override
-  State<DaifugoHandList> createState() => _DaifugoHandListState();
-}
+  static const double _cardHeight = 100;
+  static const double _cardWidth = 72;
 
-class _DaifugoHandListState extends State<DaifugoHandList> {
-  DaifugoViewModel get daifugoViewModel => widget.daifugoViewModel;
-
-  void _toggleCard(PlayingCard card) {
-    setState(() {
-      if (daifugoViewModel.selectedMyCards.contains(card)) {
-        daifugoViewModel.selectedMyCards.remove(card);
-      } else {
-        daifugoViewModel.selectedMyCards.add(card);
-      }
-    });
-  }
+  /// カードの重なり具合（数値が大きいほど重なる）
+  static const double _overlapOffset = 30;
 
   @override
   Widget build(BuildContext context) {
-    const cardHeight = 100.0;
-    const cardWidth = 72.0;
-    const overlapOffset = 30.0; // ← カードの重なり具合（数値が大きいほど重なる）
-    final cardCount = widget.cardList.length;
+    final cardCount = cardList.length;
     final totalWidth = cardCount == 0
         ? 0.0
-        : cardWidth + overlapOffset * (cardCount - 1);
+        : _cardWidth + _overlapOffset * (cardCount - 1);
 
     return SizedBox(
-      height: cardHeight,
+      height: _cardHeight,
       child: Center(
         child: SingleChildScrollView(
           scrollDirection: Axis.horizontal,
           child: SizedBox(
             width: totalWidth,
-            height: cardHeight,
+            height: _cardHeight,
             child: Stack(
-              children: List.generate(cardCount, (index) {
-                final card = widget.cardList[index];
-                final isSelected = daifugoViewModel.selectedMyCards.contains(
-                  card,
-                );
-                final image = Image.network(
-                  widget.isMyhand ? card.image : AppStrings.cardBackUrl,
-                  width: cardWidth,
-                  height: cardHeight,
-                  fit: BoxFit.cover,
-                );
-
-                return Positioned(
-                  left: index * overlapOffset,
-                  child: widget.isMyhand
-                      ? Transform.translate(
-                          offset: Offset(0, isSelected ? -10 : 0),
-                          child: GestureDetector(
-                            onTap: () => _toggleCard(card),
-                            child: image,
-                          ),
-                        )
-                      : image,
-                );
-              }),
+              children: [
+                for (int index = 0; index < cardCount; index++)
+                  Positioned(
+                    left: index * _overlapOffset,
+                    child: _card(cardList[index]),
+                  ),
+              ],
             ),
           ),
         ),
       ),
+    );
+  }
+
+  Widget _card(PlayingCard card) {
+    final image = CardImage(
+      url: isMyhand ? card.image : AppStrings.cardBackUrl,
+    );
+    if (!isMyhand) return image;
+    return Transform.translate(
+      offset: Offset(0, selectedCards.contains(card) ? -10 : 0),
+      child: GestureDetector(onTap: () => onTapCard?.call(card), child: image),
     );
   }
 }

@@ -1,5 +1,3 @@
-import 'package:poka_fugou_app/models/api/playing_card.dart';
-
 /// ポーカー役
 enum HandRank {
   highCard,
@@ -11,33 +9,37 @@ enum HandRank {
   fullHouse,
   fourKind,
   straightFlush,
-  royalFlush;
+  royalFlush,
+  fiveKind;
 
-  static evaluate(List<PlayingCard> myCardList) {}
+  /// 勝ったときに得られるポイント（役なしは1、以降は強さ順に+1）
+  int get point => this == HandRank.highCard ? 1 : index;
 
   /// 日本語表記を返す
   String get jpName {
     switch (this) {
       case HandRank.highCard:
-        return "ハイカード";
+        return 'ハイカード';
       case HandRank.onePair:
-        return "ワンペア";
+        return 'ワンペア';
       case HandRank.twoPair:
-        return "ツーペア";
+        return 'ツーペア';
       case HandRank.threeKind:
-        return "スリーカード";
+        return 'スリーカード';
       case HandRank.straight:
-        return "ストレート";
+        return 'ストレート';
       case HandRank.flush:
-        return "フラッシュ";
+        return 'フラッシュ';
       case HandRank.fullHouse:
-        return "フルハウス";
+        return 'フルハウス';
       case HandRank.fourKind:
-        return "フォーカード";
+        return 'フォーカード';
       case HandRank.straightFlush:
-        return "ストレートフラッシュ";
+        return 'ストレートフラッシュ';
       case HandRank.royalFlush:
-        return "ロイヤルフラッシュ";
+        return 'ロイヤルフラッシュ';
+      case HandRank.fiveKind:
+        return 'ファイブカード';
     }
   }
 }

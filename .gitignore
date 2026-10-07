@@ -16,7 +16,6 @@ coverage/
 *.swp
 
 # バイナリ / 中間生成物
-*.lock
 *.log
 *.tmp
 *.DS_Store
@@ -51,18 +50,9 @@ DerivedData/
 !*.xcodeproj/xcshareddata/
 !*.xcodeproj/project.xcworkspace/
 
+
 # macOS 関連
 **/.DS_Store
-
-# Windows 関連
-windows/flutter/ephemeral/
-
-# Linux 関連
-linux/flutter/ephemeral/
-
-# Web 関連
-web/.dart_tool/
-web/.pub/
 
 # その他
 *.bak

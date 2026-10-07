@@ -1,84 +1,110 @@
-import 'package:flutter/material.dart';
+import 'package:poka_fugou_app/constants/difficulty.dart';
 import 'package:poka_fugou_app/models/api/playing_card.dart';
-import 'package:poka_fugou_app/repository/api_connection.dart';
+import 'package:poka_fugou_app/models/game_state.dart';
+import 'package:poka_fugou_app/repository/preferences_repository.dart';
 import 'package:poka_fugou_app/repository/repuest/create_deck_request.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:poka_fugou_app/view_models/base_viewmodel.dart';
 
-/// メインViewModel
-class MainViewModel extends ChangeNotifier {
-  /// 自分のカードリスト
-  List<PlayingCard> myCardList = [];
+/// メインViewModel（ゲーム全体で共有する状態の持ち主。状態の変更はここ経由で行う）
+class MainViewModel extends BaseViewModel {
+  final PreferencesRepository _preferences;
 
-  /// 相手1のカードリスト
-  List<PlayingCard> cardList1 = [];
+  MainViewModel({super.api, PreferencesRepository? preferences})
+    : _preferences = preferences ?? PreferencesRepository();
 
-  /// ポーカー画面に遷移するかどうか
-  bool isGoPokerScreen = false;
+  /// ゲームの状態
+  GameState _state = const GameState();
+  GameState get state => _state;
 
-  /// 山札の残り枚数
-  int remaining = 0;
+  String get deckId => _state.deckId;
+  List<PlayingCard> get myCardList => List.unmodifiable(_state.myCards);
+  List<PlayingCard> get cardList1 => List.unmodifiable(_state.cards1);
+  int get remaining => _state.remaining;
+  List<PlayingCard> get discardedCards =>
+      List.unmodifiable(_state.discardedCards);
+  int get myPoint => _state.myPoint;
+  int get point1 => _state.point1;
 
-  // Future<void> clearAll() async {
-  //   isGoPokerScreen = false;
-  //   final prefs = await SharedPreferences.getInstance();
-  //   await prefs.clear();
-  //   notifyListeners();
-  //   return Future.value();
-  // }
+  /// 難易度
+  Difficulty difficulty = Difficulty.easy;
 
-  /// ゲームをリセット
-  void resetGame() {
-    myCardList = [];
-    cardList1 = [];
-    isGoPokerScreen = false;
-    remaining = 0;
+  /// 保存済みの難易度を読み込む
+  Future<void> loadDifficulty() async {
+    difficulty = await _preferences.loadDifficulty();
     notifyListeners();
   }
 
-  /// 新規デッキ作成
-  Future<void> createDeck(BuildContext context) async {
-    if (!context.mounted) return;
-    ApiConnection api = ApiConnection();
+  /// 難易度を変更して保存する
+  Future<void> setDifficulty(Difficulty value) async {
+    difficulty = value;
+    notifyListeners();
+    await _preferences.saveDifficulty(value);
+  }
 
-    final response = await api.startRequest(
-      context,
-      CreateDeckRequest(deckCount: 1),
+  /// ゲームをリセット
+  void resetGame() {
+    _update(const GameState());
+  }
+
+  /// 新規デッキ作成（成功したらtrue）
+  Future<bool> createDeck() async {
+    final response = await runApi(CreateDeckRequest(deckCount: 1));
+    if (response == null) return false;
+    _update(
+      const GameState().copyWith(
+        deckId: response.deckId,
+        remaining: response.remaining,
+      ),
     );
-    if (response == null) return;
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString("deckId", response.deckId);
-    remaining = response.remaining;
+    return true;
+  }
 
-    isGoPokerScreen = true;
+  /// 自分の手札を差し替える
+  void setMyCards(List<PlayingCard> cards) {
+    _update(_state.copyWith(myCards: List.unmodifiable(cards)));
+  }
+
+  /// 相手の手札を差し替える
+  void setCards1(List<PlayingCard> cards) {
+    _update(_state.copyWith(cards1: List.unmodifiable(cards)));
+  }
+
+  /// 自分の手札に追加
+  void addMyCards(List<PlayingCard> cards) {
+    setMyCards([..._state.myCards, ...cards]);
+  }
+
+  /// 相手の手札に追加
+  void addCards1(List<PlayingCard> cards) {
+    setCards1([..._state.cards1, ...cards]);
   }
 
   /// 山札の残り枚数を更新
   void updateRemaining(int count) {
-    remaining = count;
-    notifyListeners();
+    _update(_state.copyWith(remaining: count));
   }
 
-  /// 自分のカードリストに新規追加
-  void addMyCardList(List<PlayingCard> list) {
-    myCardList.addAll(list);
-    notifyListeners();
+  /// 手放したカードを記録
+  void addDiscardedCards(List<PlayingCard> cards) {
+    _update(
+      _state.copyWith(
+        discardedCards: List.unmodifiable([..._state.discardedCards, ...cards]),
+      ),
+    );
   }
 
-  /// 自分のカードリストを並び替え
-  void sortedMyCardList(List<PlayingCard> list) {
-    myCardList = list;
-    notifyListeners();
+  /// ポイントを加算（マイナスも可）
+  void addPoints({required int my, required int player1}) {
+    _update(
+      _state.copyWith(
+        myPoint: _state.myPoint + my,
+        point1: _state.point1 + player1,
+      ),
+    );
   }
 
-  /// 相手のカードリストに新規追加
-  void addCardList1(List<PlayingCard> list) {
-    cardList1.addAll(list);
-    notifyListeners();
-  }
-
-  /// 相手のカードリストを並び替え
-  void sortedCardList1(List<PlayingCard> list) {
-    cardList1 = list;
+  void _update(GameState state) {
+    _state = state;
     notifyListeners();
   }
 }
