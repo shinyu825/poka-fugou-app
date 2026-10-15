@@ -1,4 +1,5 @@
 import 'package:poka_fugou_app/models/api/playing_card.dart';
+import 'package:poka_fugou_app/models/daifugo/daifugo_state.dart';
 
 /// ゲーム全体の状態（変更は copyWith で新しい状態を作る）
 class GameState {
@@ -21,6 +22,9 @@ class GameState {
   final int myPoint;
   final int point1;
 
+  /// 大富豪の進行状態
+  final DaifugoState daifugo;
+
   const GameState({
     this.deckId = '',
     this.myCards = const [],
@@ -29,6 +33,7 @@ class GameState {
     this.discardedCards = const [],
     this.myPoint = 0,
     this.point1 = 0,
+    this.daifugo = const DaifugoState(),
   });
 
   GameState copyWith({
@@ -39,6 +44,7 @@ class GameState {
     List<PlayingCard>? discardedCards,
     int? myPoint,
     int? point1,
+    DaifugoState? daifugo,
   }) {
     return GameState(
       deckId: deckId ?? this.deckId,
@@ -48,6 +54,7 @@ class GameState {
       discardedCards: discardedCards ?? this.discardedCards,
       myPoint: myPoint ?? this.myPoint,
       point1: point1 ?? this.point1,
+      daifugo: daifugo ?? this.daifugo,
     );
   }
 }

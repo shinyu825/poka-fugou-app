@@ -4,9 +4,10 @@ import 'package:poka_fugou_app/view_models/daifugo_viewmodel.dart';
 import 'package:poka_fugou_app/view_models/main_viewmodel.dart';
 import 'package:poka_fugou_app/view_models/poker_viewmodel.dart';
 import 'package:poka_fugou_app/views/daifugo_screen.dart';
+import 'package:poka_fugou_app/views/rules_screen.dart';
 import 'package:poka_fugou_app/views/view_container/api_state_handler.dart';
 import 'package:poka_fugou_app/views/view_container/dialog/confirm_dialog.dart';
-import 'package:poka_fugou_app/views/view_container/dialog/poker_result_dialog.dart';
+import 'package:poka_fugou_app/views/view_container/dialog/game_result_dialog.dart';
 import 'package:poka_fugou_app/views/view_container/poker/poker_action_area.dart';
 import 'package:poka_fugou_app/views/view_container/poker/poker_my_area.dart';
 import 'package:poka_fugou_app/views/view_container/poker/poker_opponent_area.dart';
@@ -60,10 +61,12 @@ class _PokerScreenState extends State<PokerScreen> {
       showDialog(
         context: context,
         barrierDismissible: false,
-        builder: (context) => PokerResultDialog(
+        builder: (context) => GameResultDialog(
           result: pokerViewModel.resultStr,
-          playerHand: pokerViewModel.myHandStr,
-          opponentHand: pokerViewModel.playerHandStr,
+          details: [
+            '${AppStrings.myHand}${pokerViewModel.myHandStr}',
+            '${AppStrings.player1Hand}${pokerViewModel.playerHandStr}',
+          ],
           point: AppStrings.pointDelta(pokerViewModel.pointDelta),
         ),
       ).then((_) => pokerViewModel.onResultDialogClosed());
@@ -91,7 +94,19 @@ class _PokerScreenState extends State<PokerScreen> {
         child: ApiStateHandler(
           viewModel: pokerViewModel,
           child: Scaffold(
-            appBar: AppBar(title: const Text(AppStrings.pokerTitle)),
+            appBar: AppBar(
+              title: const Text(AppStrings.pokerTitle),
+              actions: [
+                IconButton(
+                  tooltip: AppStrings.rulesTitle,
+                  icon: const Icon(Icons.help_outline),
+                  onPressed: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const RulesScreen()),
+                  ),
+                ),
+              ],
+            ),
             body: Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,

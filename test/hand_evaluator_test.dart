@@ -135,6 +135,40 @@ void main() {
     });
   });
 
+  group('役を作っているカード', () {
+    List<String> roleOf(List<String> codes) =>
+        HandEvaluator.roleCards(hand(codes)).map((c) => c.value).toList();
+
+    test('ジョーカー入りのスリーカードはジョーカーと K だけ', () {
+      expect(roleOf(['JOKER/B', 'K/S', 'K/H', '8/C', '6/D']), [
+        'JOKER',
+        'KING',
+        'KING',
+      ]);
+    });
+    test('ワンペア・ツーペア・フォーカードは組のカードだけ', () {
+      expect(roleOf(['9/S', '4/C', '9/H', 'K/C', '2/D']), ['9', '9']);
+      expect(roleOf(['9/S', '9/H', 'K/C', 'K/D', '2/D']), [
+        '9',
+        '9',
+        'KING',
+        'KING',
+      ]);
+      expect(roleOf(['7/S', '7/H', '7/C', '2/C', '7/D']), [
+        '7',
+        '7',
+        '7',
+        '7',
+      ]);
+    });
+    test('役なしと 5 枚で作る役は全部', () {
+      expect(roleOf(['3/S', 'A/H', '9/C', '4/D', '2/C']).length, 5);
+      expect(roleOf(['3/S', 'A/S', '9/S', '4/S', '2/S']).length, 5);
+      expect(roleOf(['Q/S', 'Q/H', 'Q/C', '3/D', '3/C']).length, 5);
+      expect(roleOf(['6/S', '10/H', '8/C', '9/C', '7/D']).length, 5);
+    });
+  });
+
   group('役のポイント', () {
     test('役なしは1、以降は強さ順に+1、ファイブカードは10', () {
       expect(HandRank.highCard.point, 1);

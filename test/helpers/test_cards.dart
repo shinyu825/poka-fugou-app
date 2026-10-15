@@ -3,7 +3,7 @@ import 'package:poka_fugou_app/models/api/playing_card.dart';
 
 /// テスト用のカード生成（画像などは空）
 PlayingCard card(String value, [String suit = 'SPADES']) => PlayingCard(
-  code: '',
+  code: '$value/$suit',
   image: '',
   images: CardImages(svg: '', png: ''),
   value: value,

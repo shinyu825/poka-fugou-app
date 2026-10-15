@@ -41,7 +41,7 @@ class AppStrings {
   static const String youWin = 'You WIN.';
   static const String youLose = 'You LOSE.';
   static const String draw = 'DRAW.';
-  static const String put = 'カードを出す';
+  static const String put = '出す';
   static String remaining(int count) => '残り: $count枚';
   static String myPoint(int point) => 'あなた: ${point}pt';
   static String opponentPoint(int point) => '相手: ${point}pt';
@@ -55,4 +55,47 @@ class AppStrings {
   }
 
   static const String pass = 'パス';
+
+  // ルール
+  static const String rulesTitle = 'ルール';
+  static const String showRules = 'ルールを見る';
+
+  // 大富豪
+  static const String give = '渡す';
+  static const String discard = '捨てる';
+  static const String decide = '決定';
+  static const String you = 'あなた';
+  static const String opponent = '相手';
+  static String startByDiamondThree(String who) => '♦3 を持っている$whoから開始';
+  static String startByRandom(String who) => 'ランダムで$whoから開始';
+  static String played(String who, String cards) => '$who: $cards';
+  static String passed(String who) => '$who: パス';
+  static const String revolution = '革命！';
+  static const String backEffect = 'J バック';
+  static const String cutEffect = '8 切り';
+  static const String skipEffect = '5 スキップ';
+  static const String spadeThreeReturn = 'スペ 3 返し';
+  static String drawEffect(String who, int count) => '$whoが 6 で $count 枚引いた';
+  static String receivedCards(int count) => '相手から $count 枚もらった';
+  static String gaveCards(String who, int count) => '$whoが $count 枚渡した';
+  static String discardedCards(String who, int count) => '$whoが $count 枚捨てた';
+  static String bombed(String who, String values) => '$whoのボンバー: $values';
+  static String noEffect(String who) => '$whoは何もしなかった';
+  static String forbiddenOnly(String who) => '$whoの手札は禁止あがりのカードだけ';
+  static String selectGive(int count) => '相手に渡すカードを $count 枚まで選ぶ';
+  static String selectDiscard(int count) => '捨てるカードを $count 枚まで選ぶ';
+  static String selectBomber(int count) => 'ボンバーする数字を $count 個選ぶ';
+  static String remainingCards(String who, int count) => '$whoの残り: $count 枚';
+  static String revolutionBonus(int count, int multiplier) =>
+      '革命 $count 回（×$multiplier）';
+  static const String forbiddenFinish = '禁止あがり（±10pt 固定）';
+  static const String finalResultTitle = '最終結果';
+  static const String finalWin = 'あなたの勝ち！';
+  static const String finalLose = '相手の勝ち';
+  static const String finalDraw = '引き分け';
+  static const String total = '合計';
+  static const String toStart = 'スタート画面へ';
+  static const String deckExhaustedTitle = '山札切れ';
+  static const String deckExhaustedMessage =
+      '山札が足りなくなりました。ゲームを終了してスタート画面に戻ります。';
 }

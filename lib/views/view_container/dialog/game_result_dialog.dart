@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:poka_fugou_app/constants/strings.dart';
 
-/// ポーカー結果表示ダイアログ
-class PokerResultDialog extends StatelessWidget {
+/// 勝敗の結果ダイアログ（ポーカー・大富豪で共通）
+class GameResultDialog extends StatelessWidget {
   final String result;
-  final String playerHand;
-  final String opponentHand;
+
+  /// 役や残り枚数などの説明行
+  final List<String> details;
   final String point;
 
-  const PokerResultDialog({
+  const GameResultDialog({
     super.key,
     required this.result,
-    required this.playerHand,
-    required this.opponentHand,
+    required this.details,
     required this.point,
   });
 
@@ -27,16 +27,11 @@ class PokerResultDialog extends StatelessWidget {
             style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 20),
-          Text(
-            '${AppStrings.myHand}$playerHand',
-            style: const TextStyle(fontSize: 18),
-          ),
+          for (final detail in details) ...[
+            Text(detail, style: const TextStyle(fontSize: 18)),
+            const SizedBox(height: 10),
+          ],
           const SizedBox(height: 10),
-          Text(
-            '${AppStrings.player1Hand}$opponentHand',
-            style: const TextStyle(fontSize: 18),
-          ),
-          const SizedBox(height: 20),
           Text(
             point,
             style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),

@@ -50,6 +50,9 @@ class PokerViewModel extends BaseViewModel {
   /// 相手のハンドを見せるかどうか
   bool isOpenHands = false;
 
+  /// 相手の手札のうち表向きにするカード（役を作っているカードだけ）
+  Set<PlayingCard> openCards1 = {};
+
   /// 勝敗結果ダイアログの表示回数（増えるたびに表示する）
   ValueNotifier<int> resultCount = ValueNotifier(0);
 
@@ -182,6 +185,7 @@ class PokerViewModel extends BaseViewModel {
       // 役が分かりやすいようにランク順にソート
       mainViewModel.setMyCards(PlayingCard.toParsePorkerRank(myCardList));
       mainViewModel.setCards1(PlayingCard.toParsePorkerRank(cardList1));
+      openCards1 = HandEvaluator.roleCards(cardList1).toSet();
       isOpenHands = true;
     });
   }

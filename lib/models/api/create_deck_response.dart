@@ -15,7 +15,7 @@ class CreateDeckResponse {
       CreateDeckResponse(
         success: json['success'] as bool,
         deckId: json['deck_id'] as String,
-        shuffled: json['shuffled'] as bool,
+        shuffled: json['shuffled'] as bool? ?? false,
         remaining: json['remaining'] as int,
       );
 }

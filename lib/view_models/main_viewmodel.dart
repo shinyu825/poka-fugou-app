@@ -1,5 +1,6 @@
 import 'package:poka_fugou_app/constants/difficulty.dart';
 import 'package:poka_fugou_app/models/api/playing_card.dart';
+import 'package:poka_fugou_app/models/daifugo/daifugo_state.dart';
 import 'package:poka_fugou_app/models/game_state.dart';
 import 'package:poka_fugou_app/repository/preferences_repository.dart';
 import 'package:poka_fugou_app/repository/repuest/create_deck_request.dart';
@@ -24,6 +25,7 @@ class MainViewModel extends BaseViewModel {
       List.unmodifiable(_state.discardedCards);
   int get myPoint => _state.myPoint;
   int get point1 => _state.point1;
+  DaifugoState get daifugo => _state.daifugo;
 
   /// 難易度
   Difficulty difficulty = Difficulty.easy;
@@ -79,6 +81,21 @@ class MainViewModel extends BaseViewModel {
     setCards1([..._state.cards1, ...cards]);
   }
 
+  /// 自分の手札から取り除く
+  void removeMyCards(List<PlayingCard> cards) {
+    setMyCards(_state.myCards.where((c) => !cards.contains(c)).toList());
+  }
+
+  /// 相手の手札から取り除く
+  void removeCards1(List<PlayingCard> cards) {
+    setCards1(_state.cards1.where((c) => !cards.contains(c)).toList());
+  }
+
+  /// 大富豪の進行状態を更新
+  void updateDaifugo(DaifugoState daifugo) {
+    _update(_state.copyWith(daifugo: daifugo));
+  }
+
   /// 山札の残り枚数を更新
   void updateRemaining(int count) {
     _update(_state.copyWith(remaining: count));
@@ -91,6 +108,11 @@ class MainViewModel extends BaseViewModel {
         discardedCards: List.unmodifiable([..._state.discardedCards, ...cards]),
       ),
     );
+  }
+
+  /// 手放したカードを山札に戻したので記録を消す
+  void clearDiscardedCards() {
+    _update(_state.copyWith(discardedCards: const []));
   }
 
   /// ポイントを加算（マイナスも可）

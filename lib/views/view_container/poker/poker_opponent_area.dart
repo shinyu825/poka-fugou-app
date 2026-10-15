@@ -22,7 +22,7 @@ class PokerOpponentArea extends StatelessWidget {
           isOpen: pokerViewModel.isTieCardsOpen,
         ),
         if (pokerViewModel.isOpenHands)
-          // 判定後は表向き
+          // 判定後は役を作っているカードだけ表向き（残りは伏せたまま）
           SizedBox(
             height: 100,
             child: Center(
@@ -32,7 +32,11 @@ class PokerOpponentArea extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     for (final card in pokerViewModel.cardList1)
-                      CardImage(url: card.image),
+                      CardImage(
+                        url: pokerViewModel.openCards1.contains(card)
+                            ? card.image
+                            : AppStrings.cardBackUrl,
+                      ),
                   ],
                 ),
               ),

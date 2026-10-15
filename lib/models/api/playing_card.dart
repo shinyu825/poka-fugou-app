@@ -20,7 +20,28 @@ class PlayingCard {
   bool get isJoker => value == jokerValue;
 
   /// 表示用の値（A, K, Q, J, 10〜2, JOKER）
-  String get displayValue {
+  String get displayValue => displayOf(value);
+
+  /// 表示用の値（例: 7♦、JOKER）
+  String get shortName => isJoker ? jokerValue : '$displayValue$suitSymbol';
+
+  /// スートの記号
+  String get suitSymbol {
+    switch (suit) {
+      case 'SPADES':
+        return '♠';
+      case 'HEARTS':
+        return '♥';
+      case 'DIAMONDS':
+        return '♦';
+      case 'CLUBS':
+        return '♣';
+      default:
+        return '';
+    }
+  }
+
+  static String displayOf(String value) {
     switch (value) {
       case 'ACE':
         return 'A';

@@ -48,6 +48,8 @@ void main() {
     expect(vm.resultStr, AppStrings.youWin);
     expect(vm.pointDelta, 3);
     expect(vm.myHandStr, 'スリーカード(9)');
+    // 相手はワンペア(K) なので K だけ表向き
+    expect(vm.openCards1.map((c) => c.value).toSet(), {'KING'});
     expect(vm.mainViewModel.myPoint, 0);
     vm.onResultDialogClosed();
     expect(vm.mainViewModel.myPoint, 3);

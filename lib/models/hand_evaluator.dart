@@ -45,6 +45,26 @@ class HandEvaluator {
     return _best(hand).hand;
   }
 
+  /// 役を作っているカード（ペア・スリーカードなどの組だけ。役なしと 5 枚で作る役は全部）
+  static List<PlayingCard> roleCards(List<PlayingCard> hand) {
+    final best = _best(hand);
+    final List<int> roleRanks;
+    switch (best.score.rank) {
+      case HandRank.onePair:
+      case HandRank.threeKind:
+      case HandRank.fourKind:
+        roleRanks = best.score.tiebreakers.take(1).toList();
+      case HandRank.twoPair:
+        roleRanks = best.score.tiebreakers.take(2).toList();
+      default:
+        return hand;
+    }
+    return [
+      for (int i = 0; i < hand.length; i++)
+        if (roleRanks.contains(parsePorkerRank(best.hand[i].value))) hand[i],
+    ];
+  }
+
   static ({HandScore score, List<PlayingCard> hand}) _best(
     List<PlayingCard> hand,
   ) {

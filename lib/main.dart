@@ -5,6 +5,7 @@ import 'package:poka_fugou_app/constants/strings.dart';
 import 'package:poka_fugou_app/view_models/main_viewmodel.dart';
 import 'package:poka_fugou_app/view_models/poker_viewmodel.dart';
 import 'package:poka_fugou_app/views/poker_screen.dart';
+import 'package:poka_fugou_app/views/rules_screen.dart';
 import 'package:poka_fugou_app/views/view_container/api_state_handler.dart';
 import 'package:provider/provider.dart';
 
@@ -87,6 +88,15 @@ class MyHomePage extends StatelessWidget {
               ElevatedButton(
                 onPressed: () => _startGame(context),
                 child: const Text(AppStrings.startGame),
+              ),
+              const SizedBox(height: 12),
+              // ルール
+              OutlinedButton(
+                onPressed: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const RulesScreen()),
+                ),
+                child: const Text(AppStrings.showRules),
               ),
             ],
           ),
